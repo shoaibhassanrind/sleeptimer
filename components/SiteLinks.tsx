@@ -5,6 +5,7 @@ const LINKS = [
   { href: "/sleep-cycle-calculator", label: "Sleep cycle calculator" },
   { href: "/bedtime-calculator", label: "Bedtime calculator" },
   { href: "/sleep-time-calculator", label: "Sleep time calculator" },
+  { href: "/sleep-schedule", label: "Sleep schedule" },
   { href: "/rem-sleep-calculator", label: "REM sleep calculator" },
   { href: "/about", label: "About" },
   { href: "/privacy", label: "Privacy" },

@@ -6,6 +6,7 @@ const routes: { path: string; priority: number }[] = [
   { path: "/sleep-cycle-calculator", priority: 0.8 },
   { path: "/bedtime-calculator", priority: 0.8 },
   { path: "/sleep-time-calculator", priority: 0.8 },
+  { path: "/sleep-schedule", priority: 0.8 },
   { path: "/rem-sleep-calculator", priority: 0.8 },
   { path: "/about", priority: 0.4 },
   { path: "/privacy", priority: 0.3 },

@@ -28,7 +28,8 @@ export default function Page() {
         The same calculator is on the{" "}
         <Link href="/sleep-cycle-calculator">sleep cycle</Link>,{" "}
         <Link href="/bedtime-calculator">bedtime</Link>,{" "}
-        <Link href="/sleep-time-calculator">sleep time</Link>, and{" "}
+        <Link href="/sleep-time-calculator">sleep time</Link>,{" "}
+        <Link href="/sleep-schedule">sleep schedule</Link>, and{" "}
         <Link href="/rem-sleep-calculator">REM</Link> pages. The REM page uses this same 90-minute
         average and says plainly that it cannot detect REM. The{" "}
         <Link href="/privacy">privacy page</Link> covers the one value stored in this browser: the

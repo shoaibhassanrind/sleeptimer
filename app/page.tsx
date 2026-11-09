@@ -59,7 +59,19 @@ export default async function Page({
 
   return (
     <>
-      <Calculator initial={initial} initialResults={resolved.modeValid && resolved.atValid} />
+      <Calculator
+        initial={initial}
+        initialResults={resolved.modeValid && resolved.atValid}
+        promptIsHeading={false}
+      />
+      <article className="guide">
+        <h1>Sleep calculator</h1>
+        <p>
+          This sleep calculator suggests bedtime and wake-up times from 90-minute cycles plus the
+          minutes you need to fall asleep. Set one clock time, and the six cards are the other end
+          of those cycles.
+        </p>
+      </article>
       <Faq />
       <SiteLinks current="/" />
       <noscript>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CalculatorLanding, type CalculatorSearch } from "@/components/CalculatorLanding";
-import { CYCLE_COUNTS, CYCLE_LENGTH_MINUTES } from "@/lib/cycles";
+import { calculate, CYCLE_COUNTS, CYCLE_LENGTH_MINUTES, DEFAULT_ONSET_MINUTES } from "@/lib/cycles";
 import { pageMetadata, type FaqItem } from "@/lib/seo";
 
 const PATH = "/sleep-time-calculator";
@@ -29,6 +29,13 @@ const FAQS: readonly FaqItem[] = [
   },
 ];
 
+const EIGHT_PM = calculate({
+  mode: "bed",
+  at: "20:00",
+  onset: DEFAULT_ONSET_MINUTES,
+  now: new Date(2026, 0, 15, 12, 0, 0),
+});
+
 function hourLabel(cycles: number): string {
   const hours = (cycles * CYCLE_LENGTH_MINUTES) / 60;
   const text = Number.isInteger(hours) ? String(hours) : hours.toFixed(1);
@@ -53,16 +60,34 @@ export default function Page({ searchParams }: { searchParams: Promise<Calculato
         come from the cycle count. The clock time and the fall-asleep offset are the parts you
         change.
       </p>
-      <h2>The six lengths</h2>
+      <h2>What time should I wake up?</h2>
+      <p>
+        If you go to sleep at 8:00 PM, enter it as go to bed at {EIGHT_PM.input.label}. The
+        calculator adds the default {EIGHT_PM.onset} minutes to fall asleep, then the cycles. Each
+        wake-up time below is where that sum lands.
+      </p>
+      <ul>
+        {EIGHT_PM.options.map((option) => (
+          <li key={option.cycles}>
+            {option.cycles} {option.cycles === 1 ? "cycle" : "cycles"},{" "}
+            {option.sleepLabel.replace(" h", " hours")}: {option.when.label}
+          </li>
+        ))}
+      </ul>
+      <h2>Sleep time</h2>
+      <p>
+        Sleep time is the length of those cycles, not the wake-up clock. Each hour line is the
+        cycle count times 90 minutes, and the fall-asleep minutes stay off that line.
+      </p>
       <ul>
         {CYCLE_COUNTS.map((cycles) => (
           <li key={cycles}>{hourLabel(cycles)}</li>
         ))}
       </ul>
       <p>
-        Those hours leave out the fall-asleep minutes. The offset is time in bed before that sleep
-        length starts. From 11:00 PM with the starting 15-minute offset, the 7.5-hour card is a
-        6:45 AM wake-up, the 9-hour card is 8:15 AM, and the 1.5-hour card is 12:45 AM.
+        From 11:00 PM with the starting 15-minute offset, the 7.5-hour card is a 6:45 AM wake-up,
+        the 9-hour card is 8:15 AM, and the 1.5-hour card is 12:45 AM. The offset is time in bed
+        before that sleep length starts.
       </p>
       <p>
         Sleep now is the shortcut when the bedtime is &quot;right now&quot;. It rounds the current

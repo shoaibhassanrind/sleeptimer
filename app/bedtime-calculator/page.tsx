@@ -40,8 +40,19 @@ export default function Page({ searchParams }: { searchParams: Promise<Calculato
       faqs={FAQS}
     >
       <p>
-        The bedtime calculator opens on &quot;wake up at&quot;. Set the time you need to be awake.
-        Each card is a time to get into bed, counted backward so the cycles finish at that alarm.
+        The bedtime calculator opens on &quot;wake up at&quot;. Set the time you need to be awake,
+        and the cards count backward so the cycles finish at that alarm.
+      </p>
+      <h2>What time should I go to bed?</h2>
+      <p>
+        The result is the time to get into bed. The fall-asleep minutes are separate from the
+        cycle hours: they move that bedtime, and they stay off the hour line on the card.
+      </p>
+      <h2>Bedtime</h2>
+      <p>
+        A bedtime here is that get-into-bed time for one of the six cycle lengths. Move the
+        wake-up or the fall-asleep setting and the bedtime moves with it. The hours on the card
+        stay the cycle count times 90 minutes.
       </p>
       <h2>Counting backward</h2>
       <p>

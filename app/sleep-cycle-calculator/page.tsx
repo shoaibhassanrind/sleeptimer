@@ -39,18 +39,28 @@ export default function Page({ searchParams }: { searchParams: Promise<Calculato
       heading="Sleep cycle calculator"
       faqs={FAQS}
     >
+      <h2>What a sleep cycle is</h2>
       <p>
         A sleep cycle is the stretch of sleep that moves through lighter sleep, deeper sleep, and
         dream sleep. People often plan that stretch as {CYCLE_LENGTH_MINUTES} minutes. The sleep
         cycle calculator uses that average on purpose: it adds and subtracts clock time so a
         bedtime or a wake-up can land at the end of a planned cycle.
       </p>
-      <h2>How the six suggestions are built</h2>
       <p>
-        Start from the time in the control. The list runs from 6 cycles down to 1. At{" "}
-        {CYCLE_LENGTH_MINUTES} minutes each, the sleep lengths are 9, 7.5, 6, 4.5, 3, and 1.5
-        hours. The fall-asleep setting is extra minutes around that length. Bedtime cards move
-        earlier by those minutes. Wake-up cards move later.
+        This page does not detect where a cycle starts or ends. It keeps one fixed length so the
+        six clock times stay easy to recompute.
+      </p>
+      <h2>Sleep cycle time</h2>
+      <p>
+        Sleep cycle time here is that {CYCLE_LENGTH_MINUTES}-minute block, repeated. Start from
+        the time in the control. The list runs from 6 cycles down to 1, so the sleep lengths are
+        9, 7.5, 6, 4.5, 3, and 1.5 hours. The fall-asleep setting is extra minutes around that
+        length. Bedtime cards move earlier by those minutes. Wake-up cards move later.
+      </p>
+      <h2>Sleep clock</h2>
+      <p>
+        A sleep clock on this page is those six times read as bedtimes or wake-ups. It is the same
+        list, not a separate chart of stages.
       </p>
       <p>
         The settings control starts at {DEFAULT_ONSET_MINUTES} minutes, and it accepts 5 to 60
