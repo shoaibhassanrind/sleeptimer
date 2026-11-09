@@ -38,6 +38,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: skyScript }} />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073290199242719"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className="font-sans antialiased">{children}</body>
     </html>
