@@ -23,9 +23,19 @@ import { TimeSheet } from "./TimeSheet";
 export function Calculator({
   initial,
   initialResults,
+  path = "/",
+  idleTitle = DEFAULT_TITLE,
+  syncTitle = true,
+  promptIsHeading = true,
+  detailsHref = "#faq",
 }: {
   initial: Calculation;
   initialResults: boolean;
+  path?: string;
+  idleTitle?: string;
+  syncTitle?: boolean;
+  promptIsHeading?: boolean;
+  detailsHref?: string;
 }) {
   const [plan, setPlan] = useState(initial);
   const [resultsOn, setResultsOn] = useState(initialResults);
@@ -53,8 +63,12 @@ export function Calculator({
 
   function publish(next: Calculation) {
     setPlan(next);
-    window.history.replaceState(window.history.state, "", calculatorPath(next.mode, next.input24));
-    document.title = pageTitle(next.mode, next.input24, true);
+    window.history.replaceState(
+      window.history.state,
+      "",
+      calculatorPath(next.mode, next.input24, path),
+    );
+    document.title = syncTitle ? pageTitle(next.mode, next.input24, true) : idleTitle;
   }
 
   function edit(partial: { mode?: Mode; at?: string; chosenCycles?: CycleCount }) {
@@ -87,8 +101,8 @@ export function Calculator({
 
   function back() {
     setResultsOn(false);
-    window.history.replaceState(window.history.state, "", "/");
-    document.title = DEFAULT_TITLE;
+    window.history.replaceState(window.history.state, "", path);
+    document.title = idleTitle;
     scrollPageTop();
   }
 
@@ -119,9 +133,15 @@ export function Calculator({
           <p className="brand">sleeptimer</p>
           <div className={resultsOn ? "hero-main is-results" : "hero-main is-form"}>
             <div className="control-stack">
-              <h1 id="calculator-title" className="prompt">
-                I want to...
-              </h1>
+              {promptIsHeading ? (
+                <h1 id="calculator-title" className="prompt">
+                  I want to...
+                </h1>
+              ) : (
+                <p id="calculator-title" className="prompt">
+                  I want to...
+                </p>
+              )}
               <div className="mode-switch" role="group" aria-label="Calculator mode">
                 <button
                   type="button"
@@ -183,7 +203,7 @@ export function Calculator({
                   onSelect={(cycles) => edit({ chosenCycles: cycles })}
                 />
                 <div className="result-actions">
-                  <a className="btn btn-ghost" href="#faq">
+                  <a className="btn btn-ghost" href={detailsHref}>
                     How does it work?
                     <Arrow direction="right" />
                   </a>

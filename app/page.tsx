@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Calculator } from "@/components/Calculator";
 import { Faq } from "@/components/Faq";
+import { SiteLinks } from "@/components/SiteLinks";
 import {
   calculate,
   DEFAULT_CHOSEN_CYCLES,
@@ -60,6 +61,7 @@ export default async function Page({
     <>
       <Calculator initial={initial} initialResults={resolved.modeValid && resolved.atValid} />
       <Faq />
+      <SiteLinks current="/" />
       <noscript>
         <p>{DEFAULT_RECOMMENDATION}</p>
         <p>{NOSCRIPT_FAQ}</p>

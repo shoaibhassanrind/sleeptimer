@@ -145,8 +145,9 @@ export function recommendationFor(
   return `${lead} · ${cycles} cycles · ${sleepLabel}`;
 }
 
-export function calculatorPath(mode: Mode, at: string): string {
-  return `/?mode=${mode}&at=${at}`;
+export function calculatorPath(mode: Mode, at: string, path = "/"): string {
+  const query = `mode=${mode}&at=${at}`;
+  return path === "/" ? `/?${query}` : `${path}?${query}`;
 }
 
 /** Nearest 5-minute clock time, including seconds in the rounding. */

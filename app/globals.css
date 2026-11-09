@@ -602,6 +602,60 @@ html[data-sky="night"] .sun {
   scroll-margin-top: 16px;
 }
 
+.guide {
+  position: relative;
+  z-index: 10;
+  width: min(720px, 100%);
+  margin-inline: auto;
+  padding: 3rem 1.25rem 0;
+  scroll-margin-top: 16px;
+}
+
+.guide-tight {
+  padding-top: 1.5rem;
+}
+
+.guide h1 {
+  margin: 0;
+  color: #f4f1ea;
+  font-size: 1.875rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.guide h2 {
+  margin: 2rem 0 0;
+  color: #f4f1ea;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.guide p,
+.guide li {
+  margin: 0.75rem 0 0;
+  color: #c9c5d6;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.guide ul {
+  margin: 0.75rem 0 0;
+  padding-left: 1.15rem;
+}
+
+.guide a {
+  color: #f4f1ea;
+  text-underline-offset: 3px;
+}
+
+.guide code {
+  white-space: nowrap;
+  font-size: 0.95em;
+}
+
 button {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;

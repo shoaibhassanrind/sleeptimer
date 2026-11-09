@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   isValidAt,
   isValidMode,
@@ -112,4 +113,55 @@ export function jsonLd(): Record<string, unknown> {
 
 export function jsonLdScript(): string {
   return JSON.stringify(jsonLd()).replace(/</g, "\\u003c");
+}
+
+export function pageMetadata(title: string, description: string, path: string): Metadata {
+  return {
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      title,
+      description,
+      url: path,
+      siteName: "sleeptimer",
+      type: "website",
+    },
+  };
+}
+
+export function pageJsonLdScript(input: {
+  path: string;
+  name: string;
+  description: string;
+  faqs?: readonly FaqItem[];
+}): string {
+  const url = `${siteOrigin()}${input.path}`;
+  const graph: Record<string, unknown>[] = [
+    {
+      "@type": "WebPage",
+      name: input.name,
+      description: input.description,
+      url,
+      isPartOf: {
+        "@type": "WebSite",
+        name: "sleeptimer",
+        url: `${siteOrigin()}/`,
+      },
+    },
+  ];
+  if (input.faqs && input.faqs.length > 0) {
+    graph.push({
+      "@type": "FAQPage",
+      mainEntity: input.faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
+        },
+      })),
+    });
+  }
+  return JSON.stringify({ "@context": "https://schema.org", "@graph": graph }).replace(/</g, "\\u003c");
 }
