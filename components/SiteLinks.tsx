@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/sleep-schedule", label: "Sleep schedule" },
   { href: "/rem-sleep-calculator", label: "REM sleep calculator" },
   { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
   { href: "/privacy", label: "Privacy" },
 ] as const;
 
