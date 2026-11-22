@@ -389,6 +389,13 @@ html[data-sky="night"] .sun {
   line-height: 1.3;
 }
 
+.mode-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
 .mode-switch {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -398,6 +405,26 @@ html[data-sky="night"] .sun {
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 999px;
   background: var(--control-bg);
+}
+
+.mode-analyze {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: var(--control-bg);
+  color: var(--control-muted);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.mode-analyze[aria-pressed="true"] {
+  background: var(--control-selected);
+  color: var(--control-ink);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.78);
 }
 
 .mode-switch button {
@@ -497,6 +524,101 @@ html[data-sky="night"] .sun {
 .btn-arrow {
   display: block;
   flex: none;
+}
+
+.analyze-clock,
+.analyze-age {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  width: 100%;
+}
+
+.analyze-label {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.age-select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--control-bg);
+  color: var(--control-ink);
+  font: inherit;
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.analysis-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: var(--card-bg);
+  color: var(--card-ink);
+  text-align: left;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.analysis-kicker,
+.analysis-detail {
+  color: var(--card-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.analysis-note {
+  color: var(--sky-ink);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.analysis-kicker {
+  font-size: 0.95rem;
+}
+
+.analysis-value {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.analysis-below {
+  color: #e7a394;
+}
+
+.analysis-within {
+  color: #8fd9a8;
+}
+
+.analysis-above {
+  color: #e8a23a;
+}
+
+.analysis-note {
+  width: min(40rem, 100%);
+  margin: 0;
+  text-align: left;
 }
 
 .results {
@@ -700,6 +822,11 @@ html.sheet-open body {
 
   .cycle-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .analysis-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
 

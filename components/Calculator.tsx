@@ -16,6 +16,8 @@ import {
   type Mode,
 } from "@/lib/cycles";
 import { DEFAULT_TITLE, pageTitle } from "@/lib/seo";
+import { analyzeSleep } from "@/lib/sleepAnalysis";
+import { AnalyzeFields, AnalyzeResults } from "./SleepAnalysis";
 import { CycleList } from "./CycleList";
 import { SettingsSheet } from "./SettingsSheet";
 import { TimeSheet } from "./TimeSheet";
@@ -41,6 +43,12 @@ export function Calculator({
   const [resultsOn, setResultsOn] = useState(initialResults);
   const [timeOpen, setTimeOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [uiMode, setUiMode] = useState<"plan" | "analyze">("plan");
+  const [bed24, setBed24] = useState("01:00");
+  const [wake24, setWake24] = useState("08:00");
+  const [ageGroupId, setAgeGroupId] = useState("");
+  const [analysisOn, setAnalysisOn] = useState(false);
+  const [clockTarget, setClockTarget] = useState<"bed" | "wake" | null>(null);
   const liveOnset = useSyncExternalStore(subscribeOnset, readOnsetOrDefault, serverOnset);
   const calc =
     liveOnset === plan.onset
@@ -111,7 +119,27 @@ export function Calculator({
     edit({ at: join24(parts.hour12, parts.minute, parts.period === "AM" ? "PM" : "AM") });
   }
 
+  function toggleClock(at: string): string {
+    const parts = split24(at);
+    return join24(parts.hour12, parts.minute, parts.period === "AM" ? "PM" : "AM");
+  }
+
+  function showPlan(mode: Mode) {
+    setUiMode("plan");
+    setClockTarget(null);
+    edit({ mode });
+  }
+
+  const analysis = analysisOn
+    ? analyzeSleep({
+        bedtime: bed24,
+        wake: wake24,
+        onset: liveOnset,
+        ageGroupId: ageGroupId || null,
+      })
+    : null;
   const heading = calc.mode === "wake" ? "You should go to bed at:" : "You should wake up at:";
+  const showingResults = uiMode === "analyze" || resultsOn;
 
   return (
     <>
@@ -124,6 +152,7 @@ export function Calculator({
           aria-haspopup="dialog"
           onClick={() => {
             setTimeOpen(false);
+            setClockTarget(null);
             setSettingsOpen(true);
           }}
         >
@@ -131,7 +160,7 @@ export function Calculator({
         </button>
         <div className="hero-frame">
           <p className="brand">sleeptimer</p>
-          <div className={resultsOn ? "hero-main is-results" : "hero-main is-form"}>
+          <div className={showingResults ? "hero-main is-results" : "hero-main is-form"}>
             <div className="control-stack">
               {promptIsHeading ? (
                 <h1 id="calculator-title" className="prompt">
@@ -142,22 +171,63 @@ export function Calculator({
                   I want to...
                 </p>
               )}
-              <div className="mode-switch" role="group" aria-label="Calculator mode">
+              <div className="mode-group" role="group" aria-label="Calculator mode">
+                <div className="mode-switch">
+                  <button
+                    type="button"
+                    aria-pressed={uiMode === "plan" && calc.mode === "bed"}
+                    onClick={() => showPlan("bed")}
+                  >
+                    go to bed at
+                  </button>
+                  <button
+                    type="button"
+                    aria-pressed={uiMode === "plan" && calc.mode === "wake"}
+                    onClick={() => showPlan("wake")}
+                  >
+                    wake up at
+                  </button>
+                </div>
                 <button
                   type="button"
-                  aria-pressed={calc.mode === "bed"}
-                  onClick={() => edit({ mode: "bed" })}
+                  className="mode-analyze"
+                  aria-pressed={uiMode === "analyze"}
+                  onClick={() => {
+                    setUiMode("analyze");
+                    setTimeOpen(false);
+                    setClockTarget(null);
+                  }}
                 >
-                  go to bed at
-                </button>
-                <button
-                  type="button"
-                  aria-pressed={calc.mode === "wake"}
-                  onClick={() => edit({ mode: "wake" })}
-                >
-                  wake up at
+                  Analyze my sleep
                 </button>
               </div>
+              {uiMode === "analyze" ? (
+                <AnalyzeFields
+                  bedtime={bed24}
+                  wake={wake24}
+                  ageGroupId={ageGroupId}
+                  onBedtimeOpen={() => {
+                    setSettingsOpen(false);
+                    setTimeOpen(false);
+                    setClockTarget("bed");
+                  }}
+                  onWakeOpen={() => {
+                    setSettingsOpen(false);
+                    setTimeOpen(false);
+                    setClockTarget("wake");
+                  }}
+                  onToggleBedtime={() => setBed24((current) => toggleClock(current))}
+                  onToggleWake={() => setWake24((current) => toggleClock(current))}
+                  onAgeGroup={setAgeGroupId}
+                  onCalculate={() => {
+                    setSettingsOpen(false);
+                    setClockTarget(null);
+                    setAnalysisOn(true);
+                    scrollPageTop();
+                  }}
+                />
+              ) : (
+              <>
               <div className="time-row">
                 <button
                   type="button"
@@ -193,8 +263,11 @@ export function Calculator({
                   </button>
                 </div>
               )}
+              </>
+              )}
             </div>
-            {resultsOn ? (
+            {uiMode === "analyze" && analysis ? <AnalyzeResults result={analysis} /> : null}
+            {uiMode === "plan" && resultsOn ? (
               <div className="results">
                 <h2 className="result-title">{heading}</h2>
                 <CycleList
@@ -224,6 +297,16 @@ export function Calculator({
         onConfirm={(at) => {
           edit({ at });
           setTimeOpen(false);
+        }}
+      />
+      <TimeSheet
+        open={clockTarget !== null}
+        time24={clockTarget === "wake" ? wake24 : bed24}
+        onClose={() => setClockTarget(null)}
+        onConfirm={(at) => {
+          if (clockTarget === "wake") setWake24(at);
+          else setBed24(at);
+          setClockTarget(null);
         }}
       />
       <SettingsSheet

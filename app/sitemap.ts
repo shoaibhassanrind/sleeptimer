@@ -11,6 +11,7 @@ const routes: { path: string; priority: number }[] = [
   { path: "/about", priority: 0.4 },
   { path: "/contact", priority: 0.3 },
   { path: "/privacy", priority: 0.3 },
+  { path: "/terms", priority: 0.3 },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
