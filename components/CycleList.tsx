@@ -14,8 +14,7 @@ function hourPhrase(minutes: number): string {
 
 function moodKind(cycles: number): "good" | "mid" | "warn" {
   if (cycles >= 5) return "good";
-  if (cycles <= 2) return "warn";
-  return "mid";
+  return "warn";
 }
 
 function Mood({ cycles }: { cycles: number }) {
@@ -45,7 +44,7 @@ export function CycleList({ options, chosen, onSelect }: CycleListProps) {
           <li key={option.cycles}>
             <button
               type="button"
-              className="cycle-card"
+              className={option.cycles >= 5 ? "cycle-card is-adequate" : "cycle-card"}
               aria-pressed={selected}
               onClick={() => onSelect(option.cycles)}
             >

@@ -625,25 +625,30 @@ html[data-sky="night"] .sun {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.9rem;
+  gap: 0.7rem;
   width: 100%;
-  margin-top: 0.35rem;
-  padding-top: 1.15rem;
+  margin-top: 0.15rem;
+  padding-top: 0.85rem;
   border-top: 1px solid color-mix(in srgb, var(--sky-ink) 28%, transparent);
+}
+
+.schedule-block .analysis-note {
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 
 .schedule-group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.4rem;
   width: 100%;
 }
 
 .schedule-heading {
   margin: 0;
   color: var(--sky-ink);
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 650;
   letter-spacing: -0.02em;
   line-height: 1.3;
@@ -653,7 +658,7 @@ html[data-sky="night"] .sun {
 .schedule-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -662,7 +667,33 @@ html[data-sky="night"] .sun {
 
 .schedule-card {
   align-items: center;
+  gap: 2px;
+  padding: 10px 12px;
   text-align: center;
+}
+
+.schedule-card .analysis-kicker,
+.schedule-card .analysis-detail {
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.schedule-card .analysis-value {
+  font-size: 1.2rem;
+}
+
+.schedule-card.is-recommended {
+  background: color-mix(in srgb, #d4b06a 12%, var(--card-bg));
+  box-shadow: inset 0 0 0 1.5px #d4b06a;
+}
+
+.recommend-badge {
+  color: #e4c98a;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .results {
@@ -717,6 +748,10 @@ html[data-sky="night"] .sun {
 }
 
 .cycle-card[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.28);
+}
+
+.cycle-card.is-adequate[aria-pressed="true"] {
   background: #2a2218;
   box-shadow: inset 0 0 0 2px #e7a23a;
 }

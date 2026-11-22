@@ -30,6 +30,7 @@ export type SleepBand = "below" | "within" | "above";
 export type ScheduleOption = {
   sleepMinutes: number;
   at: string;
+  recommended: boolean;
 };
 
 export type SleepSchedule = {
@@ -246,19 +247,52 @@ function buildSchedule(input: {
   wakeLabel: string;
 }): SleepSchedule {
   const targets = targetSleepMinutes(input.group);
+  const recommendedMinutes = recommendedSleepMinutes(input.group, targets);
+  const option = (sleepMinutes: number, at: string): ScheduleOption => ({
+    sleepMinutes,
+    at,
+    recommended: sleepMinutes === recommendedMinutes,
+  });
   return {
     guidance: scheduleGuidance(input.group, input.band, input.onsetMinutes),
     bedtimeLabel: input.bedtimeLabel,
     wakeLabel: input.wakeLabel,
-    bedtimes: targets.map((sleepMinutes) => ({
-      sleepMinutes,
-      at: shiftClock(input.wake, -(sleepMinutes + input.onsetMinutes)),
-    })),
-    wakeTimes: targets.map((sleepMinutes) => ({
-      sleepMinutes,
-      at: shiftClock(input.bedtime, sleepMinutes + input.onsetMinutes),
-    })),
+    bedtimes: orderOptions(
+      targets.map((sleepMinutes) =>
+        option(sleepMinutes, shiftClock(input.wake, -(sleepMinutes + input.onsetMinutes))),
+      ),
+    ),
+    wakeTimes: orderOptions(
+      targets.map((sleepMinutes) =>
+        option(sleepMinutes, shiftClock(input.bedtime, sleepMinutes + input.onsetMinutes)),
+      ),
+    ),
   };
+}
+
+/** Duration to feature. Open-ended adult guidance uses 8 hours, above the 7-hour minimum. */
+function recommendedSleepMinutes(group: AgeGroup | null, targets: number[]): number {
+  const anchor = scheduleAnchor(group);
+  return targets.reduce((best, minutes) => {
+    const bestDistance = Math.abs(best - anchor);
+    const distance = Math.abs(minutes - anchor);
+    if (distance < bestDistance) return minutes;
+    if (distance === bestDistance && minutes > best) return minutes;
+    return best;
+  });
+}
+
+function scheduleAnchor(group: AgeGroup | null): number {
+  if (!group || group.maxMinutes == null) return 8 * 60;
+  if (group.dayTotal) return group.minMinutes + (group.maxMinutes - group.minMinutes) / 4;
+  return (group.minMinutes + group.maxMinutes) / 2;
+}
+
+function orderOptions(options: ScheduleOption[]): ScheduleOption[] {
+  return [...options].sort((left, right) => {
+    if (left.recommended !== right.recommended) return left.recommended ? -1 : 1;
+    return left.sleepMinutes - right.sleepMinutes;
+  });
 }
 
 function scheduleGuidance(group: AgeGroup | null, band: SleepBand, onsetMinutes: number): string {

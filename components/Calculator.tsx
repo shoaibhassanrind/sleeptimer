@@ -275,6 +275,12 @@ export function Calculator({
                   chosen={calc.chosenCycles}
                   onSelect={(cycles) => edit({ chosenCycles: cycles })}
                 />
+                {calc.chosenCycles < 5 ? (
+                  <p className="analysis-note">
+                    Under 7 hours is a shorter planning option, not a recommended night of sleep. These
+                    cycle lengths are estimates, and this does not mean you will wake up refreshed.
+                  </p>
+                ) : null}
                 <div className="result-actions">
                   <a className="btn btn-ghost" href={detailsHref}>
                     How does it work?

@@ -131,47 +131,47 @@ function ScheduleRecommendations({
       <p className="analysis-note">{schedule.guidance}</p>
       <ScheduleGroup
         title={`Bedtimes for ${clockArticle(schedule.wakeLabel)} ${schedule.wakeLabel} wake-up`}
-        fixed={`Wake-up stays at ${schedule.wakeLabel}.`}
+        fixed={fixedLine(`Wake-up stays at ${schedule.wakeLabel}.`, onsetMinutes)}
         options={schedule.bedtimes}
-        onsetMinutes={onsetMinutes}
       />
       <ScheduleGroup
         title={`Wake-up times for ${clockArticle(schedule.bedtimeLabel)} ${schedule.bedtimeLabel} bedtime`}
-        fixed={`Bedtime stays at ${schedule.bedtimeLabel}.`}
+        fixed={fixedLine(`Bedtime stays at ${schedule.bedtimeLabel}.`, onsetMinutes)}
         options={schedule.wakeTimes}
-        onsetMinutes={onsetMinutes}
       />
     </section>
   );
+}
+
+function fixedLine(kept: string, onsetMinutes: number): string {
+  if (onsetMinutes === 0) return `${kept} No added minutes to fall asleep.`;
+  return `${kept} Each time adds ${formatDuration(onsetMinutes)} to fall asleep.`;
 }
 
 function ScheduleGroup({
   title,
   fixed,
   options,
-  onsetMinutes,
 }: {
   title: string;
   fixed: string;
   options: ScheduleOption[];
-  onsetMinutes: number;
 }) {
-  const extra =
-    onsetMinutes === 0
-      ? "No added minutes to fall asleep."
-      : `Plus ${formatDuration(onsetMinutes)} to fall asleep.`;
   return (
     <div className="schedule-group">
       <h3 className="schedule-heading">{title}</h3>
       <p className="analysis-note">{fixed}</p>
       <ul className="schedule-grid">
         {options.map((option) => (
-          <li key={option.sleepMinutes} className="analysis-card schedule-card">
+          <li
+            key={option.sleepMinutes}
+            className={option.recommended ? "analysis-card schedule-card is-recommended" : "analysis-card schedule-card"}
+          >
+            {option.recommended ? <span className="recommend-badge">Recommended for you</span> : null}
             <span className="analysis-kicker">{formatDuration(option.sleepMinutes)} estimated sleep</span>
             <time className="analysis-value" dateTime={option.at}>
               {labelFrom24(option.at)}
             </time>
-            <span className="analysis-detail">{extra}</span>
           </li>
         ))}
       </ul>
