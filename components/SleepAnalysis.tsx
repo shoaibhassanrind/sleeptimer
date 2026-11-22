@@ -4,6 +4,7 @@ import {
   AGE_GROUPS,
   ESTIMATE_NOTE,
   formatDuration,
+  type ScheduleOption,
   type SleepAnalysisResult,
 } from "@/lib/sleepAnalysis";
 import { labelFrom24, split24 } from "@/lib/cycles";
@@ -110,10 +111,77 @@ export function AnalyzeResults({ result }: { result: SleepAnalysisResult }) {
           <span className="analysis-detail">{result.status}</span>
         </li>
       </ul>
-      <p className="analysis-note">{result.suggestion}</p>
       <p className="analysis-note">{ESTIMATE_NOTE}</p>
+      <ScheduleRecommendations result={result} />
     </div>
   );
+}
+
+function ScheduleRecommendations({
+  result,
+}: {
+  result: Extract<SleepAnalysisResult, { ok: true }>;
+}) {
+  const { schedule, onsetMinutes } = result;
+  return (
+    <section className="schedule-block" aria-labelledby="sleep-schedule-title">
+      <h2 id="sleep-schedule-title" className="result-title">
+        Sleep schedule
+      </h2>
+      <p className="analysis-note">{schedule.guidance}</p>
+      <ScheduleGroup
+        title={`Bedtimes for ${clockArticle(schedule.wakeLabel)} ${schedule.wakeLabel} wake-up`}
+        fixed={`Wake-up stays at ${schedule.wakeLabel}.`}
+        options={schedule.bedtimes}
+        onsetMinutes={onsetMinutes}
+      />
+      <ScheduleGroup
+        title={`Wake-up times for ${clockArticle(schedule.bedtimeLabel)} ${schedule.bedtimeLabel} bedtime`}
+        fixed={`Bedtime stays at ${schedule.bedtimeLabel}.`}
+        options={schedule.wakeTimes}
+        onsetMinutes={onsetMinutes}
+      />
+    </section>
+  );
+}
+
+function ScheduleGroup({
+  title,
+  fixed,
+  options,
+  onsetMinutes,
+}: {
+  title: string;
+  fixed: string;
+  options: ScheduleOption[];
+  onsetMinutes: number;
+}) {
+  const extra =
+    onsetMinutes === 0
+      ? "No added minutes to fall asleep."
+      : `Plus ${formatDuration(onsetMinutes)} to fall asleep.`;
+  return (
+    <div className="schedule-group">
+      <h3 className="schedule-heading">{title}</h3>
+      <p className="analysis-note">{fixed}</p>
+      <ul className="schedule-grid">
+        {options.map((option) => (
+          <li key={option.sleepMinutes} className="analysis-card schedule-card">
+            <span className="analysis-kicker">{formatDuration(option.sleepMinutes)} estimated sleep</span>
+            <time className="analysis-value" dateTime={option.at}>
+              {labelFrom24(option.at)}
+            </time>
+            <span className="analysis-detail">{extra}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function clockArticle(label: string): "a" | "an" {
+  const hour = Number(label.split(":")[0]);
+  return hour === 8 || hour === 11 ? "an" : "a";
 }
 
 function bandLabel(band: "below" | "within" | "above"): string {

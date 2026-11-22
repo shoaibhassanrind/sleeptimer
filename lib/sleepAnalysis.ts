@@ -27,6 +27,19 @@ export const ESTIMATE_NOTE =
 
 export type SleepBand = "below" | "within" | "above";
 
+export type ScheduleOption = {
+  sleepMinutes: number;
+  at: string;
+};
+
+export type SleepSchedule = {
+  guidance: string;
+  bedtimeLabel: string;
+  wakeLabel: string;
+  bedtimes: ScheduleOption[];
+  wakeTimes: ScheduleOption[];
+};
+
 export type SleepAnalysis = {
   ok: true;
   inBedMinutes: number;
@@ -38,6 +51,7 @@ export type SleepAnalysis = {
   band: SleepBand;
   status: string;
   suggestion: string;
+  schedule: SleepSchedule;
 };
 
 export type SleepAnalysisResult = SleepAnalysis | { ok: false; message: string };
@@ -70,6 +84,7 @@ export function analyzeSleep(input: {
   const group = AGE_GROUPS.find((item) => item.id === input.ageGroupId) ?? null;
   const band = sleepBand(sleepMinutes, group);
   const bedtimeLabel = labelFrom24(shiftClock(input.bedtime, 0));
+  const wakeLabel = labelFrom24(shiftClock(input.wake, 0));
 
   return {
     ok: true,
@@ -90,6 +105,15 @@ export function analyzeSleep(input: {
       onsetMinutes,
       inBedMinutes,
       bedtimeLabel,
+    }),
+    schedule: buildSchedule({
+      group,
+      band,
+      bedtime: input.bedtime,
+      wake: input.wake,
+      onsetMinutes,
+      bedtimeLabel,
+      wakeLabel,
     }),
   };
 }
@@ -195,4 +219,65 @@ function suggestionText(input: {
   }
 
   return `A similar bedtime, around ${input.bedtimeLabel}, fits this wake-up time. ${refreshed}`;
+}
+
+/**
+ * Estimated-sleep lengths inside the public-health range.
+ * 1–4 cycle lengths (6 hours or less) are never offered as targets.
+ * An open-ended adult minimum is illustrated through 9 hours, not treated as a maximum.
+ */
+function targetSleepMinutes(group: AgeGroup | null): number[] {
+  const min = group?.minMinutes ?? GENERAL_ADULT_MINUTES;
+  const max = group?.maxMinutes ?? 9 * 60;
+  const preferred = [7 * 60, 7 * 60 + 30, 8 * 60, 9 * 60, 10 * 60, 10 * 60 + 30, 12 * 60];
+  const chosen = new Set(preferred.filter((minutes) => minutes >= min && minutes <= max));
+  if (min <= max) chosen.add(min);
+  if (group?.maxMinutes != null) chosen.add(group.maxMinutes);
+  return [...chosen].sort((left, right) => left - right);
+}
+
+function buildSchedule(input: {
+  group: AgeGroup | null;
+  band: SleepBand;
+  bedtime: string;
+  wake: string;
+  onsetMinutes: number;
+  bedtimeLabel: string;
+  wakeLabel: string;
+}): SleepSchedule {
+  const targets = targetSleepMinutes(input.group);
+  return {
+    guidance: scheduleGuidance(input.group, input.band, input.onsetMinutes),
+    bedtimeLabel: input.bedtimeLabel,
+    wakeLabel: input.wakeLabel,
+    bedtimes: targets.map((sleepMinutes) => ({
+      sleepMinutes,
+      at: shiftClock(input.wake, -(sleepMinutes + input.onsetMinutes)),
+    })),
+    wakeTimes: targets.map((sleepMinutes) => ({
+      sleepMinutes,
+      at: shiftClock(input.bedtime, sleepMinutes + input.onsetMinutes),
+    })),
+  };
+}
+
+function scheduleGuidance(group: AgeGroup | null, band: SleepBand, onsetMinutes: number): string {
+  const onset = formatDuration(onsetMinutes);
+  const fallAsleep =
+    onsetMinutes === 0
+      ? "These clock times use the current fall-asleep setting of 0 minutes."
+      : `Each clock time adds ${onset} to fall asleep before the estimated sleep.`;
+  const shorter =
+    band === "above" ? " A shorter time asleep is not automatically healthier." : "";
+  const limit =
+    "The times are planning estimates based on duration. Dividing a duration by 90 minutes does not mean a sleep cycle is exactly 90 minutes, and it does not measure sleep stages. This does not mean you will wake up feeling refreshed.";
+  if (!group) {
+    return `No age group is selected. These suggestions follow general adult guidance of at least 7 hours of estimated sleep, shown here through 9 hours. They are not based on your age. ${fallAsleep}${shorter} ${limit}`;
+  }
+  const day = group.dayTotal
+    ? " This range is for a full day, including naps, so one stretch in bed does not have to cover all of it."
+    : "";
+  const ceiling =
+    group.maxMinutes == null ? " The listed times run through 9 hours and do not set a maximum." : "";
+  return `For ${group.label}, these suggestions stay inside the general guidance of ${rangeLabel(group)} of estimated sleep.${ceiling}${day} ${fallAsleep}${shorter} ${limit}`;
 }
