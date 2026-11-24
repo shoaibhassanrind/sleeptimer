@@ -136,9 +136,10 @@ export default function Page({ searchParams }: { searchParams: Promise<Calculato
         wake-up.
       </p>
       <p>
-        The allowance starts at {DEFAULT_ONSET_MINUTES} minutes. You can set it from 5 to 60
-        minutes, in steps of 5, and the list updates on this device. A longer allowance pulls
-        every bedtime earlier, because you need more time in bed before the planned sleep begins.
+        The allowance starts at {DEFAULT_ONSET_MINUTES} minutes. It can be raised or lowered between
+        5 and 60 minutes, five minutes at a time, and the six bedtimes change on this device right
+        away. A longer allowance pulls every bedtime earlier, because you need more time in bed
+        before the planned sleep begins.
         The cycle hours printed on the card do not change.
       </p>
       <p>
@@ -214,9 +215,9 @@ export default function Page({ searchParams }: { searchParams: Promise<Calculato
         if an earlier bedtime was possible and you passed it by.
       </p>
       <p>
-        The face on a card only groups the lengths. Five and six cycles share one mark. One
-        through four cycles share the other. The mark is not a grade of how you will feel in the
-        morning.
+        The picture on a card only sorts the longer nights from the shorter ones. Five and six
+        cycles use one picture. One, two, three, and four cycles use the other. It is not a grade
+        of how you will feel in the morning.
       </p>
       <p>
         What each length means when you count forward from a bedtime is written on the{" "}
