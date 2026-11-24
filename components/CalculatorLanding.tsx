@@ -36,6 +36,8 @@ export async function CalculatorLanding({
   origin,
   siteName,
   inLanguage,
+  linkCurrentCrumb = false,
+  afterFaq,
   children,
 }: {
   searchParams: Promise<CalculatorSearch>;
@@ -52,6 +54,8 @@ export async function CalculatorLanding({
   origin?: string;
   siteName?: string;
   inLanguage?: string;
+  linkCurrentCrumb?: boolean;
+  afterFaq?: ReactNode;
   children: ReactNode;
 }) {
   const resolved = resolveSearch(await searchParams);
@@ -83,10 +87,12 @@ export async function CalculatorLanding({
                 return (
                   <li key={`${crumb.path}-${crumb.name}`}>
                     {index > 0 ? <span aria-hidden="true">/</span> : null}
-                    {current ? (
+                    {current && !linkCurrentCrumb ? (
                       <span aria-current="page">{crumb.name}</span>
                     ) : (
-                      <Link href={crumb.path}>{crumb.name}</Link>
+                      <Link href={crumb.path} aria-current={current ? "page" : undefined}>
+                        {crumb.name}
+                      </Link>
                     )}
                   </li>
                 );
@@ -98,6 +104,7 @@ export async function CalculatorLanding({
         {children}
       </article>
       <Faq items={faqs} heading={faqHeading} />
+      {afterFaq}
       <SiteLinks current={path} />
       <script
         type="application/ld+json"
