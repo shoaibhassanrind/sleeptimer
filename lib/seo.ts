@@ -130,27 +130,52 @@ export function pageMetadata(title: string, description: string, path: string): 
   };
 }
 
+export type BreadcrumbItem = {
+  name: string;
+  path: string;
+};
+
 export function pageJsonLdScript(input: {
   path: string;
   name: string;
   description: string;
   faqs?: readonly FaqItem[];
+  faqPage?: boolean;
+  breadcrumbs?: readonly BreadcrumbItem[];
+  origin?: string;
+  siteName?: string;
+  inLanguage?: string;
 }): string {
-  const url = `${siteOrigin()}${input.path}`;
-  const graph: Record<string, unknown>[] = [
-    {
-      "@type": "WebPage",
-      name: input.name,
-      description: input.description,
-      url,
-      isPartOf: {
-        "@type": "WebSite",
-        name: "sleeptimer",
-        url: `${siteOrigin()}/`,
-      },
+  const origin = (input.origin ?? siteOrigin()).replace(/\/$/, "");
+  const url = `${origin}${input.path}`;
+  const webPage: Record<string, unknown> = {
+    "@type": "WebPage",
+    name: input.name,
+    description: input.description,
+    url,
+    isPartOf: {
+      "@type": "WebSite",
+      name: input.siteName ?? "sleeptimer",
+      url: `${origin}/`,
     },
-  ];
-  if (input.faqs && input.faqs.length > 0) {
+  };
+  if (input.inLanguage) webPage.inLanguage = input.inLanguage;
+  const graph: Record<string, unknown>[] = [webPage];
+  if (input.breadcrumbs && input.breadcrumbs.length > 0) {
+    webPage["@id"] = `${url}#webpage`;
+    webPage.breadcrumb = { "@id": `${url}#breadcrumb` };
+    graph.push({
+      "@type": "BreadcrumbList",
+      "@id": `${url}#breadcrumb`,
+      itemListElement: input.breadcrumbs.map((crumb, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: crumb.name,
+        item: `${origin}${crumb.path}`,
+      })),
+    });
+  }
+  if (input.faqPage !== false && input.faqs && input.faqs.length > 0) {
     graph.push({
       "@type": "FAQPage",
       mainEntity: input.faqs.map((faq) => ({

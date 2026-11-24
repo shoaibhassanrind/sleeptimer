@@ -834,6 +834,39 @@ html[data-sky="night"] .sun {
   line-height: 1.25;
 }
 
+.guide h3 {
+  margin: 1.35rem 0 0;
+  color: #f4f1ea;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
+.guide .crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+  color: #c9c5d6;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.guide .crumbs li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.guide .crumbs [aria-current="page"] {
+  color: #f4f1ea;
+}
+
 .guide p,
 .guide li {
   margin: 0.75rem 0 0;
